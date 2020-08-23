@@ -56,11 +56,13 @@ sub usage {
         uid: usera
         group: groupA
         alias: A
+        domain: spud.com
       hostname_B:
         ip: 1.2.3.4
         uid: spud
         group: groupB
         alias: B
+        location: room 101
       ...
 
 HERE
@@ -96,13 +98,21 @@ sub show_group {
 
   for my $host ( keys %{$list->{connect}} ) {
     next unless ($list->{connect}{$host}{group} and $group =~ /$list->{connect}{$host}{group}/i);
-    $tmp{$host}{ip}    = $list->{connect}{$host}{ip};
-    $tmp{$host}{alias} = ($list->{connect}{$host}{alias}) ? $list->{connect}{$host}{alias} : ' ';
+    $tmp{$host}{ip}       = $list->{connect}{$host}{ip};
+    $tmp{$host}{alias}    = ($list->{connect}{$host}{alias})    ? $list->{connect}{$host}{alias}    : ' ';
+    $tmp{$host}{group}    = ($list->{connect}{$host}{group})    ? $list->{connect}{$host}{group}    : ' ';
+    $tmp{$host}{domain}   = ($list->{connect}{$host}{domain})   ? $list->{connect}{$host}{domain}   : ' ';
+    $tmp{$host}{location} = ($list->{connect}{$host}{location}) ? $list->{connect}{$host}{location} : ' ';
   }
 
   if ( %tmp ) {
     for my $host ( sort keys %tmp ) {
-      printf '%10s  %-30s%-18s%s', $tmp{$host}{alias}, $host, $tmp{$host}{ip}, "\n";
+      printf ' %6s %-16s %-30s %-8s %-8s %s %s', $tmp{$host}{alias},
+                                                 $host,
+                                                 $tmp{$host}{domain},
+                                                 $tmp{$host}{location},
+                                                 $tmp{$host}{group},
+                                                 $tmp{$host}{ip}, "\n";
     }
   }
   else {
@@ -117,9 +127,12 @@ sub show_list {
   my $list = shift;
 
   for my $host ( sort keys %{$list->{connect}} ) {
-    my $alias = ($list->{connect}{$host}{alias}) ? $list->{connect}{$host}{alias} : ' ';
-    my $group = ($list->{connect}{$host}{group}) ? $list->{connect}{$host}{group} : ' ';
-    printf '%10s  %-30s%-18s%8s%s', $alias, $host, $list->{connect}{$host}{ip}, $group, "\n";
+    my $alias  = ($list->{connect}{$host}{alias})    ? $list->{connect}{$host}{alias}    : ' ';
+    my $group  = ($list->{connect}{$host}{group})    ? $list->{connect}{$host}{group}    : ' ';
+    my $domain = ($list->{connect}{$host}{domain})   ? $list->{connect}{$host}{domain}   : ' ';
+    my $loc    = ($list->{connect}{$host}{location}) ? $list->{connect}{$host}{location} : ' ';
+
+    printf ' %6s %-16s %-30s %-8s %-8s %s %s', $alias, $host, $domain, $loc, $group, $list->{connect}{$host}{ip}, "\n";
   }
   exit 0;
 }
