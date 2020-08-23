@@ -1,0 +1,59 @@
+#!/usr/bin/perl -w
+# dupes      show the duplicate lines in a file
+
+use strict;
+use Digest::MD5 qw/ md5_hex /;
+
+my ( $uniq, $dupe, $line ) = ( 0, 0 );
+my %line_hash;
+
+
+sub insert_is_uniq($$) {
+  my ( $hash_ref, $key )	 = @_;
+
+  if ( $hash_ref->{$key} ) {
+    $hash_ref->{$key}++;
+    return 0
+  }
+  else {
+    $hash_ref->{$key} = 1;
+    return 1
+  }
+}
+
+
+unless ( defined $ARGV[0] ) {
+  print 'usage: ' . $0 . ' FILE' . "\n";
+  exit
+}
+
+
+if ( $0 =~ /uniq/ ) {
+  $uniq = 1;
+}
+elsif ( $0 =~ /dupe/ ) {
+  $dupe = 1;
+}
+else {
+  print 'executable name must contain \'uniq\' or \'dupe\'' . "\n";
+  exit;
+}
+
+
+if ( $uniq ) {
+  while ($line = <>) {
+    next if ( $line =~ /^$/ );
+    print $line if ( insert_is_uniq(\%line_hash, md5_hex($line)) )
+  }
+}
+elsif ( $dupe ) {
+  while ($line = <>) {
+    next if ( $line =~ /^$/ );
+    print $line if ( not insert_is_uniq(\%line_hash, md5_hex($line)) )
+  }
+}
+else {
+  print 'exiting ... you shouldn\'t even be here' . "\n";
+}
+
+

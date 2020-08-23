@@ -1,0 +1,19 @@
+#!/bin/bash
+## level      [bash] show the current shell depth
+# purpose: determine how many shell levels deep we are in this session
+# note: we added a level just to execute this script, so we subtract it
+
+LEVEL=$( expr $SHLVL - 1 )
+
+WORD="level"
+
+if (( $LEVEL > 1 )); then
+  WORD="$WORDs"
+fi
+
+if [[ $1 == "-n" ]]; then
+  echo $LEVEL
+else
+  printf "This shell is %s %s deep\n" "$LEVEL" "$WORD"
+fi
+#SDG

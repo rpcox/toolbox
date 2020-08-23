@@ -1,0 +1,10 @@
+#!/bin/bash
+## epoch2iso  [bash] convert epoch to ISO format
+
+if [ -z $1 ]; then
+  printf "usage: epoch2iso UNIX_EPOCH\n"
+  exit
+fi
+
+date -u -d @$1 +'%F %T %z'
+date -d @$1 +'%F %T %z'

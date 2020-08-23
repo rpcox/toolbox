@@ -1,0 +1,5 @@
+#!/bin/bash
+# uc - Convert char STRING to upper case
+# uc STRING
+
+echo $1 | tr [:lower:] [:upper:]

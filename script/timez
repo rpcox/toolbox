@@ -1,0 +1,33 @@
+#!/usr/bin/perl -w
+# timez - show the time across multiple time zones
+use strict;
+use DateTime;
+
+my @timezones = qw|
+                    Australia/Sydney
+                    Asia/Vladivostok
+                    Asia/Seoul
+                    Asia/Singapore
+                    Asia/Calcutta
+                    Europe/Moscow
+                    Asia/Jerusalem
+                    Europe/Rome
+                    Europe/Paris
+                    Europe/London
+                    UTC
+                    America/New_York
+                    America/Chicago
+                    America/Denver
+                    America/Phoenix
+                    America/Los_Angeles
+                    America/Anchorage
+                    Pacific/Honolulu
+                    |;
+
+my $dt = DateTime->now;
+
+foreach my $tz ( @timezones ) {
+  $dt->set_time_zone($tz);
+  # format = YYYY-MM-DD HH:MM:SS
+  print $dt->strftime( '%F%t%T%t%Z%t%z%t' ) . $tz . "\n"
+}

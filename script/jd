@@ -1,0 +1,16 @@
+#!/bin/bash
+## jd         [bash] print the julian date
+
+if [[ -z $1 ]]; then
+  /bin/date +%j
+else
+  DATE=$1
+  REGEX="[[:digit:]]{4}\-[[:digit:]]{2}\-[[:digit:]]{2}"
+  if [[ $DATE =~ $REGEX ]]; then
+    /bin/date -d "$DATE" +%j
+  else
+    printf "usage: julian [YYYY-MM-DD]"
+  fi
+fi
+
+#SDG

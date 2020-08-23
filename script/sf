@@ -1,0 +1,20 @@
+#!/bin/bash
+## sf         [bash] swap files.  F1 -> F2 & F2 -> F1
+# swap around the names of two files.  Replaces the following
+# > mv FILE_1 temp
+# > mv FILE_2 FILE_1
+# > mv temp FILE_2
+
+if [[ -z $1 || -z $2 ]]; then
+  printf 'usage: sf FILE1 FILE2\n'
+  exit
+fi
+
+FILE1=$1
+FILE2=$2
+
+/bin/mv $FILE1 temp
+/bin/mv $FILE2 $FILE1
+/bin/mv temp $FILE2
+
+#SDG

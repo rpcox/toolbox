@@ -1,0 +1,130 @@
+#!/usr/bin/perl -w
+# utc - convert a time to other time zones
+
+use strict;
+use DateTime;
+
+my ( $year, $month, $day, $hour, $min, $sec );
+my $date_time;
+
+my @timezones = qw|
+                    Australia/Sydney
+                    Asia/Vladivostok
+                    Asia/Seoul
+                    Asia/Singapore
+                    Asia/Calcutta
+                    Europe/Moscow
+                    Asia/Jerusalem
+                    Europe/Rome
+                    Europe/Paris
+                    Europe/London
+                    UTC
+                    America/New_York
+                    America/Chicago
+                    America/Denver
+                    America/Phoenix
+                    America/Los_Angeles
+                    America/Anchorage
+                    Pacific/Honolulu
+                    |;
+
+sub usage {
+  print ' usage: utc [YYYY-MM-DD HH:MM:SS]' . "\n\n" .
+        ' utc YYYY-MM-DD hh:mm:ss    <= given a time in UTC, show equiv in other zones' . "\n" .
+        ' utc EPOCH                  <= based off local time, show UTC +0 and other zones' . "\n" .
+        ' utc now                    <= based off local time, show UTC +0 and other zones' . "\n\n";
+  exit
+}
+
+my $regex_yd  = qr/\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}/;
+my $regex_now = qr/now/;
+my $regex_epoch = qr/[^a-zA-Z]/;
+
+
+sub split_date_time($) {
+  my ( $line ) = @_;
+  my @temp = split /\s+/, $line;
+  my ( $year, $month, $day, $hour, $min, $sec );
+
+  ( $year, $month, $day, ) = ( $1, $2, $3 ) if $line =~ /(\d{4})\-(\d{2})\-(\d{2})/;
+  ( $hour, $min, $sec )    = ( $1, $2, $3 ) if $line =~ /(\d{2}):(\d{2}):(\d{2})/;
+
+  if ( $year && $month && $day && $hour && $min && $sec ) {
+    return ( $year, $month, $day, $hour, $min, $sec )
+  }
+  else {
+    die 'error: date and/or time formats are incorrect.  check input.' . "\n" .
+        ' input = ' . $line . "\n"
+  }
+}
+
+
+sub get_gmtime ($)  {
+  my ( $epoch  ) = @_;
+  my ( $sec, $min, $hour, $day, $month, $year );
+
+  if ( defined $epoch ) {
+    ( $sec, $min, $hour, $day, $month, $year ) = (( gmtime($epoch) )[0, 1, 2, 3, 4, 5 ]);
+  }
+  else {
+    ( $sec, $min, $hour, $day, $month, $year ) = (( gmtime() )[0, 1, 2, 3, 4, 5 ]);
+  }
+
+  $year += 1900;  $month += 1;
+  return ( $sec, $min, $hour, $day, $month, $year )
+}
+
+
+if ( -p STDIN ) {                      # coming in on a STDIN pipe
+  my $line = <>;
+  $line =~ s/\s+$//;
+
+  if ( $line =~ /$regex_yd/ ) {
+    ( $year, $month, $day, $hour, $min, $sec )= split_date_time($line);
+  }
+  elsif ( $line =~ /$regex_now/ ) {
+    ( $sec, $min, $hour, $day, $month, $year ) = get_gmtime(undef);
+  }
+  elsif ( $line =~ /$regex_epoch/ ) {
+    ( $sec, $min, $hour, $day, $month, $year ) = get_gmtime($ARGV[0]);
+  }
+  else {
+    usage
+  }
+}
+else {                                  # coming in on a tty
+  usage if ( not defined $ARGV[0] );
+  usage if ( $ARGV[0] =~ /\-h/ );
+
+  if ( defined $ARGV[0] and defined $ARGV[1] ) {
+    my $line = $ARGV[0] .' '. $ARGV[1];
+
+    if ( $line =~ /$regex_yd/ ) {
+      ( $year, $month, $day, $hour, $min, $sec )= split_date_time($line);
+    }
+  }
+  elsif ( $ARGV[0] =~ /$regex_now/ ) {
+    ( $sec, $min, $hour, $day, $month, $year ) = get_gmtime(undef);
+  }
+  elsif ( $ARGV[0] =~ /$regex_epoch/ ) {
+    ( $sec, $min, $hour, $day, $month, $year ) = get_gmtime($ARGV[0]);
+  }
+  else {
+    usage
+  }
+}
+
+$date_time = DateTime->new( year      => $year,
+                            month     => $month,
+                            day       => $day,
+                            hour      => $hour,
+                            minute    => $min,
+                            second    => $sec,
+                            time_zone => 'UTC'
+                          );
+
+foreach my $tz ( @timezones ) {
+  $date_time->set_time_zone($tz);
+  # format = YYYY-MM-DD HH:MM:SS
+  print $date_time->strftime( '%F%t%T%t%Z%t%z%t' ) . $tz . "\n";
+}

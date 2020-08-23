@@ -1,0 +1,16 @@
+#!/bin/bash
+# def - get the definition of a word from dict.org
+#
+
+if [[ -z $1 ]]; then
+  printf "usage: def WORD\n"
+  exit
+fi
+
+which curl >/dev/null
+
+if [ $? = 0 ]; then
+  curl -s dict://dict.org/d:$1  | grep -P '^( |1)'
+else
+  echo "unable to find curl"
+fi

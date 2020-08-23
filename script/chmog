@@ -1,0 +1,13 @@
+#!/bin/bash
+# chmog - chmod, chown, chgrp all at once
+#
+
+if [ $# -ne 4 ] ; then
+  echo "usage: chmog mode owner group FILE"
+  exit
+else
+  chmod $1 $4
+  chown $2 $4
+  chgrp $3 $4
+fi
+

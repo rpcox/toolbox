@@ -1,0 +1,32 @@
+#!/bin/bash
+# The general commands to extract various archives.
+# It's an 'easy extract'.  Every possible nuance isn't addressed and tar won't
+#  just figure out all of them
+#
+## extract    [bash] extract a variety of tar archives
+
+COMMAND=$(basename $0)
+
+if [[ -z $1 ]]; then
+  printf "usage: %s FILE_NAME\n" "$COMMAND"
+  exit
+fi
+
+
+case $1 in
+  *.tar.bz2)   tar xvjf $1    ;;
+  *.tar.gz)    tar xvzf $1    ;;
+  *.bz2)       bunzip2 $1     ;;
+  *.rar)       rar x $1       ;;
+  *.gz)        gunzip $1      ;;
+  *.tar)       tar xvf $1     ;;
+  *.tbz2)      tar xvjf $1    ;;
+  *.tgz)       tar xvzf $1    ;;
+  *.zip)       unzip $1       ;;
+  *.tar.xz)    tar xJf $1      ;;  # xz-utils mus be installed
+  *.Z)         uncompress $1  ;;
+  *.7z)        7z x $1        ;;
+  *)           printf "ok ... stumped me.\nI don't know how to easily extract '$1'...\n" ;;
+esac
+
+#SDG

@@ -1,0 +1,127 @@
+#!/usr/bin/perl
+
+use 5.014;
+use File::Basename qw/ basename /;
+
+my $version = '1.1';
+
+# ---------------------------------------------------
+
+sub version {
+  say basename($0).' v'.$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+
+  use File::Basename qw/ basename /;
+  my $script = basename($0);
+
+  print<<HERE;
+
+ NAME
+   $script - run file test operators on a FILE
+
+ SYNOPSIS
+   $script help | list
+   $script FILE1 FILE2 ...
+
+ DESCRIPTION
+   Based on file test operators, identify the file type.
+
+   -h, --help     Show this usage text
+   -v, --version  Show version
+
+ EXAMPLES
+
+  > $script /dev/null
+   character
+
+  > cat FILE_LIST | $script
+
+  > find / -exec $script {} +
+
+HERE
+
+  exit;
+}
+
+# ---------------------------------------------------
+
+sub test {
+  my $file = shift;
+
+  my $line;
+
+  if ( ! -e $file ) {
+    say '\''.$file.'\' does not exist';
+    exit;
+  }
+  elsif ( -b $file ) {
+    say 'block'
+  }
+  elsif ( -c $file ) {
+    say 'character'
+  }
+  elsif ( -d $file ) {
+    say 'directory'
+  }
+  elsif ( -l $file ) {
+    say 'link'
+  }
+  elsif ( -p $file ) {
+    say 'pipe'
+  }
+  elsif ( -S $file ) {
+    say 'socket'
+  }
+  elsif ( -t $file ) {
+    say 'tty'
+  }
+  elsif ( -f $file ) {
+    say 'file'
+  }
+  else {
+    say 'undetermined'
+  }
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my $opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions (
+    "h|help"    => \$opt->{help},
+    "v|version" => \$opt->{version},
+  );
+
+  version and exit if $opt->{version};
+  usage(0, '') if $opt->{help};
+}
+
+# ---------------------------------------------------
+
+sub main {
+  my %opt;
+  get_options(\%opt);
+
+  if ( -t STDIN ) {  # reading from cmd line
+    for my $file ( @ARGV ) {
+      test $file;
+    }
+  }
+  else {             # reading from pipe
+    while (my $file = <>) {
+      test $file;
+    }
+  }
+}
+
+# ---------------------------------------------------
+
+main
+#SDG

@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+#
+# calculate the standard deviation for a set of numbers.  one number per line in file
+#
+# usage:  sdev FILE
+#         cat FILE | sdev
+#
+## sdev       [perl] calculate the standard deviation for a set of numbers
+use strict;
+
+my ( $count, $sum, $mean, $diff_sum, @numbers );
+
+while (my $num = <>) {
+  next if ( $num !~ /[0-9,]/ );
+  chomp $num;
+  $count++;
+  $num =~ s/,//g;
+  $sum += $num;
+  push @numbers, $num;
+}
+
+$mean = ($sum/$count);
+
+foreach my $num ( @numbers )  {
+  $diff_sum += ( ( $num - $mean )**2 );
+}
+
+print sqrt($diff_sum/$count) . "\n";

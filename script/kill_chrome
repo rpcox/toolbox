@@ -1,0 +1,17 @@
+#!/bin/bash
+
+LIST=$(ps -ef | grep chrome | grep -vP '(grep|kill)' | awk '{print $2}')
+echo "1 - $LIST"
+
+if [[ -z $LIST ]]; then
+  LIST=$(ps -ef | grep chromium | grep -v grep | awk '{print $2}')
+  echo "2 - $LIST"
+
+  if [[ -z $LIST ]]; then
+    echo 'Chrome not found'
+    exit 1
+  fi
+
+fi
+
+kill -SIGKILL $LIST

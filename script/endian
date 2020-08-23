@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $string = pack( "l", 0x41424344 );
+
+if ( $string =~ /ABCD/ ) {
+  print 'big' . "\n";
+}
+elsif ( $string =~ /DCBA/ ) {
+  print 'little' . "\n";
+}

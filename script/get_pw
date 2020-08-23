@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+## get_pw     [perl] script tool to collect a password
+# Prevents having to use a password in a commandline in a shell script (e.g., bash)
+
+use 5.014;
+use IO::Prompt;
+
+my $what = shift @ARGV;
+
+unless ( $what ) {
+  print 'usage: get_pw FOR_WHAT'."\n";
+  exit;
+}
+
+print prompt( 'Password for '.$what.' : ', -echo => '*' );

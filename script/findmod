@@ -1,0 +1,17 @@
+#!/bin/bash
+## findmod    [perl] find a specific Perl module
+
+MOD=$1
+
+file=$(echo $MOD | sed 's/::/\//g').pm
+
+if [ -n $MOD ]; then
+  for path in $(perl -e 'print join("\n", @INC),"\n"' | tr '\n' ' '); do
+     /bin/ls $path/$file 2>/dev/null
+     if [[ $? == 0 ]]; then
+       exit
+     fi
+  done
+else
+  echo 'usage: findmod MODULE'
+fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+# ucfirst    Uppercase the first letter of a char STRING
+# ucfirst STRING
+#
+echo "$1" | sed 's/.*/\u&/'

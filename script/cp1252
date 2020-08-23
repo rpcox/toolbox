@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+# cp1252 - Generate Windows CP1252 character set
+
+use 5.014;
+use Encode;
+
+sub hexify {
+  return join '', map { sprintf("%02x", ord($_)) } split(//, $_[0]);
+}
+
+say "CP1252 Dec   CP1252 Hex   Unicode Dec   Unicode Hex    UTF8 Bytes   CP1252 Char   Unicaode Char";
+say "----------   ----------   -----------   -----------    ----------   ----------    -------------";
+
+for (my $i=0x80; $i<=0xFF; $i++) {
+  my $ch = chr($i);
+  my $native = Encode::decode("cp1252", $ch);
+  my $utf8 = Encode::encode("utf-8", $native);
+  # the &#%d; doesn't always seem to give you the CP1252 character in a Linux terminal.
+  printf "%-12d 0x%02x         %-13d 0x%04x         %-12s &#%d;        &#%d;\n",
+    $i, $i, ord($native), ord($native), hexify($utf8), $i, ord($native);
+}

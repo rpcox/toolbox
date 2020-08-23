@@ -1,0 +1,160 @@
+#!/usr/bin/perl
+
+use 5.014;
+use File::Basename qw/ basename /;
+
+my $version = '1.1';
+my %fid = (
+  'block' => { type => 'block device',
+               id => 10 },
+  'char'  => { type => 'character device',
+               id => 11 },
+  'dir'   => { type => 'directory',
+               id => 12 },
+  'file'  => { type => 'regular file',
+               id => 13 },
+  'link'  => { type => 'symbolic link',
+               id => 14 },
+  'pipe'  => { type => 'pipe',
+               id => 15 },
+  'sock'  => { type => 'socket',
+               id => 16 },
+  'tty'   => { type => 'opened by tty',
+               id => 17 },
+  'udet'  => { type => 'undetermined',
+               id => 99 },
+);
+
+# ---------------------------------------------------
+
+sub version {
+  say basename($0).' v'.$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+
+  use File::Basename qw/ basename /;
+  my $script = basename($0);
+
+  print<<HERE;
+
+ NAME
+   $script - run file test operators on a FILE
+
+ SYNOPSIS
+   $script help | list
+   $script FILE1 FILE2 ...
+
+ DESCRIPTION
+   Based on file test operators, identify the file type.
+
+   -h, --help     Show this usage text
+
+   -l, --list     List all file types and device IDs
+
+   -v, --version  Show version
+
+ EXAMPLES
+
+  > $script /dev/null
+   character device   11  /dev/null
+
+  > cat FILE_LIST | $script
+
+  > find / -exec $script {} +
+
+HERE
+
+  exit;
+}
+
+# ---------------------------------------------------
+
+sub test {
+  my $file = shift;
+
+  my $line;
+
+  if ( ! -e $file ) {
+    $line = 'does not exist';
+  }
+  elsif ( -b $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{block}{type}, "\t", $fid{block}{id}, "\t$file"
+  }
+  elsif ( -c $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{char}{type}, "\t", $fid{char}{id}, "\t$file"
+  }
+  elsif ( -d $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{dir}{type}, "\t", $fid{dir}{id}, "\t$file"
+  }
+  elsif ( -l $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{link}{type}, "\t", $fid{link}{id}, "\t$file"
+  }
+  elsif ( -p $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{pipe}{type}, "\t", $fid{pipe}{id}, "\t$file"
+  }
+  elsif ( -S $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{sock}{type}, "\t", $fid{sock}{id}, "\t$file"
+  }
+  elsif ( -t $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{tty}{type}, "\t", $fid{tty}{id}, "\t$file"
+  }
+  elsif ( -f $file ) {
+    $line = sprintf '%-17s%s%3d%s', $fid{file}{type}, "\t", $fid{file}{id}, "\t$file"
+  }
+  else {
+    $line = sprintf '%-17s%s%3d%s', $fid{udet}{type}, "\t", $fid{udet}{id}, "\t$file"
+  }
+
+  say $line;
+}
+
+# ---------------------------------------------------
+
+sub list {
+  for ( sort keys %fid ) {
+    say $fid{$_}{id} . ' : '. $fid{$_}{type};
+  }
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my $opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions (
+    "h|help"    => \$opt->{help},
+    "l|list"    => \$opt->{list},
+    "v|version" => \$opt->{version},
+  );
+
+  version and exit if $opt->{version};
+  list and exit if  $opt->{list};
+  usage(0, '') if $opt->{help};
+}
+
+# ---------------------------------------------------
+
+sub main {
+  my %opt;
+  get_options(\%opt);
+
+  if ( -t STDIN ) {  # reading from cmd line
+    for my $file ( @ARGV ) {
+      test $file;
+    }
+  }
+  else {             # reading from pipe
+    while (my $file = <>) {
+      test $file;
+    }
+  }
+}
+
+# ---------------------------------------------------
+
+main;

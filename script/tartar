@@ -1,0 +1,19 @@
+#!/bin/bash
+## tartar - copy one directory tree to another location
+
+SRC=$1
+DST=$2
+
+if [[ -n $SRC && -n $DST ]]; then
+  if [[ -e $SRC && -e $DST ]]; then
+    tar cf - $SRC | ( cd $DST && tar xBf - )
+  else
+    echo 'SRC_DIR or DST_DIR does not exist'
+  fi
+
+  exit
+
+else
+  echo 'tartar SRC_DIR DST_DIR'
+fi
+

@@ -1,0 +1,5 @@
+#!/bin/bash
+# lc - Convert char STRING to lower case
+# lc STRING
+#
+echo $1 | tr [:upper:] [:lower:]

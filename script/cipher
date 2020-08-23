@@ -1,0 +1,81 @@
+#!/bin/bash
+# cipher - Encrypt/decrypt data
+# encrypt a passphrase
+# usage: cipher encrypt 128|192|256
+#        cipher decrypt BASE64_TEXT
+#
+
+ALGO=$2
+CMD=""
+OPENSSL=$(which openssl | cut -d ' ' -f 3)
+OPERATION=$1
+BASE64=$3
+PASSWORD=""
+
+function usage {
+  echo "\
+
+ usage: cipher OPERATION BITS [BASE64_TEXT]
+        cipher encrypt 128|192|256
+        cipher decrypt 128|192|256 BASE64_TEXT
+"
+  exit
+}
+
+if [ -z $OPENSSL ]; then
+  printf "openssl was not found in the environment\n"
+  exit 1
+fi
+
+if [ -z $OPERATION ]; then
+  echo " missing encrypt|decrypt"
+  usage
+else
+  OPERATION=$(echo $OPERATION | tr [A-Z] [a-z])
+  if [[ $OPERATION != "encrypt" && $OPERATION != "decrypt" ]]; then
+    echo " only encrypt and decrypt permitted for OPERATION"
+    usage
+  fi
+fi
+
+if [ -z $ALGO ]; then
+  echo " BITS incorrect or not supplied"
+  usage
+else
+  RETVAL=$(echo $ALGO | egrep '(128|192|256)')
+
+  if [ ! $RETVAL ]; then
+    echo " only 128, 192, or 256 BITS supported"
+    usage
+  else
+    ALGO="-aes$ALGO"
+  fi
+fi
+
+if [[ -z $BASE64 && $OPERATION == "decrypt" ]]; then
+  echo " BASE64_TEXT required for decrypt"
+  usage
+fi
+
+case $OPERATION in
+
+  encrypt)
+    read -sp "enter passphrase to protect : " PROTECTED_PASSPHRASE
+    echo
+    read -sp "  enter password to encrypt : " PASSWORD
+    echo
+    echo $PROTECTED_PASSPHRASE | $OPENSSL enc $ALGO -k $PASSWORD -base64 -salt
+    ;;
+  decrypt)
+    read -sp "enter password to decrypt passphrase : " PASSWORD
+    echo
+    # 2>/dev/null - suppressing a warning
+    $OPENSSL enc $ALGO -k $PASSWORD -a -d -salt <<<$BASE64  2>/dev/null
+    ;;
+  *)
+    echo "$OPERATION is not a valid OPERATION"
+    usage
+    ;;
+
+esac
+

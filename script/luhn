@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+## luhn       [perl] validate CCNs
+
+use 5.014;
+use IO::Prompt;
+
+sub is_valid_ccn($) {
+  my ( $potential_card_number ) = @_;
+
+  $potential_card_number =~ s/[\-\ ]//g;
+
+  die 'length is incorrect [13 - 19 digits] or card number does not contain digits'
+    unless ( $potential_card_number =~ /^[0-9]{13,19}$/ );
+
+  my ( $alternator, $sum ) = ( 0, 0 );
+
+  # - Working R to L, start with the second to last digit, alternating digits moving left
+  # - Double the value of that even position digit.  For any doubled digit that results in
+  #   the value of 10 or more, add 1 to mod 10 of that digit.
+  #   Example: 2220 becomes 4240 from ( 2 * 2 = 4 < 10; so 2 becomes 4 ) 2
+  #                                   ( 2 * 2 = 4 < 10; so 2 becomes 4 ) 0
+  #            8751 becomes 7711 from ( 2 * 8 = 16 >= 10; 16 mod 10 = 6; 6 + 1 = 7) 7
+  #                                   ( 2 * 5 = 10 >= 10; 10 mod 10 = 0; 0 + 1 = 1) 1
+  # Then add all the digits together - 4240 => 10
+  #                                    7711 => 16
+  # if that sum mod 10 = 0, then the card number is valid.  4240 is valid, 7711 is not
+
+  foreach my $digit ( reverse ( split //, $potential_card_number )) {
+    if ( $alternator ) {
+      $digit *= 2;
+      $digit = ( $digit % 10 ) + 1 if ( $digit > 9 );
+    }
+
+    $alternator = !$alternator;
+    $sum += $digit;
+  }
+
+  return ( ( $sum % 10 )  == 0 )
+}
+
+my $card_number = prompt ('enter card number: ');
+
+my $validity = ( is_valid_ccn($card_number) ) ? '' : 'in';
+printf '%s%s%s', $validity, 'valid', "\n";
+
+exit ( ( $validity ) ? 0 : 1 )

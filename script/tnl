@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+## get-tnl    [perl] get recent TOR node list
+
+use 5.014;
+use LWP::Simple qw(getstore);
+use LWP::UserAgent;
+
+my $file = 'tor-node-list.txt';
+my $ua = LWP::UserAgent->new();
+$ua->agent('Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/72.0');
+my $response = $ua->get('https://www.dan.me.uk/tornodes');
+
+say $response->status_line;
+exit unless $response->is_success;
+
+my @line = split /\n/, $response->content;
+
+open(my $fh, '>', $file);
+say "filehandle open fail: $!" unless $fh;
+
+my ( $i, $n ) = ( 0, 0 );
+for ($i = 0; $i < $#line; $i++) {
+  next unless $line[$i] =~ /^<!-- __BEGIN_TOR_NODE_LIST__/;
+  $i++;     # jump to the next line
+
+  do {
+    chomp $line[$i];
+    $line[$i] =~ s/<br \/>$//;
+    $line[$i] =~ s/&lt;/</;
+    $line[$i] =~ s/&gt;/>/;
+    say $fh join("\t", (split /\|/, $line[$i]));
+    $i++; $n++;
+  } until  ($line[$i] =~ /^<!-- __END_TOR_NODE_LIST__/);
+
+}
+
+close $fh;
+say $n.' nodes in '.$file;
+

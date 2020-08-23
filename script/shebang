@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# shebang     add the shebang you forgot to put in a script
+#
+# example : shebang /bin/bash FILE_NAME
+# example : shebang "/usr/bin/env perl" FILE_NAME
+
+if [[ -z $1 || -z $2 ]]; then
+  printf "usage: shebang SHEBANG_STRING FILE_NAME\n"
+  exit
+fi
+
+printf '%s\n' 0a '#!'"$1" . w | /bin/ed -s "$2"
+
+#SDG

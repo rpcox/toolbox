@@ -1,0 +1,58 @@
+#!/bin/bash
+# dos2mac     convert CR+LF to CR
+# dos2unix    convert CR+LF to LF
+# mac2dos     convert CR to CR+LF
+# mac2unix    convert CR to LF
+# unix2dos    convert LF to CR+LF
+# unix2mac    convert LF to CR
+
+COMMAND=$(basename $0)
+
+if [[ -z $1 ]]; then
+  printf "usage: %s FILE_NAME\n" "$COMMAND"
+  exit
+fi
+
+# LF		0xA	10	\n	UNIX
+# CR+LF		0xD0xA	13 10	\r\n	MS-DOS
+# CR		0x0D	10	\r	Mac
+
+case $COMMAND in
+
+  d2m|dos2mac)
+    # CR+LF -> CR
+    perl -pe '$_ =~ s/\x0d\x0a/\x0d/g' $1
+    ;;
+
+  d2u|dos2unix)
+    # CR+LF -> LF
+    perl -pe '$_ =~ s/\x0d\x0a/\x0a/g' $1
+    ;;
+
+  m2d|mac2dos)
+    # CR -> CR+LF
+    perl -pe '$_ =~ s/\x0d/\x0d\x0a/g' $1
+    ;;
+
+  m2|mac2unix)
+    # CR -> LF
+    perl -pe '$_ =~ s/\x0d/\x0a/g' $1
+    ;;
+
+  u2d|unix2dos)
+    # LF -> CR+LF
+    perl -pe '$_ =~ s/\x0a/\x0d\x0a/g' $1
+    ;;
+
+  u2m|unix2mac)
+    # convert LF to CR
+    perl -pe '$_ =~ s/\x0a/\x0d/g' $1
+    ;;
+
+  *)
+    echo 'unrecognized command'
+    ;;
+
+esac
+
+#SDG

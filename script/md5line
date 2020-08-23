@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w
+## md5line    [perl] calculate MD5s for words and phrases
+# > ./md5line
+# line
+# 6438c669e0d0de98e6929c2cc0fac474
+# spud
+# 3d45fe50e22855290fe41847fec153a8
+# ^C
+# >
+
+use strict;
+use Digest::MD5 qw/ md5_hex /;
+
+while (my $line = <>) {
+  $line =~ s/\s+$//;
+
+  print md5_hex($line) . "\n";
+}

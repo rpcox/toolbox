@@ -1,0 +1,171 @@
+#!/usr/bin/perl
+
+use 5.014;
+use File::Basename qw/ basename /;
+use YAML qw/LoadFile/;
+
+my $version = '1.0';
+
+# ---------------------------------------------------
+
+sub version {
+  say basename($0).' v'.$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+  my ( $code, $msg ) = @_;
+
+  say $msg.' : try '.basename($0).' --help' and exit $code if $msg;
+
+  print<<HERE;
+
+  NAME
+
+    connect - SSH to a host from a list of systems
+
+  SYNOPSIS
+
+    connect --help | --version
+    connect --list
+    connect --group GROUP
+    connect HOST
+
+  DESCRIPTION
+
+   -g, --group
+      list all hosts from a particular group in the configured list
+
+   -l, --list
+      list all hosts in the configured list
+
+   -h, --help
+      Show this usage information.
+
+   -v, --version
+      Show the version number.
+
+  NOTES
+    Create an environment variable named 'CONNECT_CONFIG' and have it point
+    to a yaml configuration file with a host list.  The format is
+
+    connect:
+      hostname_A:
+        ip: 1.1.1.1
+        uid: usera
+        group: groupA
+        alias: A
+      hostname_B:
+        ip: 1.2.3.4
+        uid: spud
+        group: groupB
+        alias: B
+      ...
+
+HERE
+  exit $code;
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my $opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions(
+    'g|group=s' => \$opt->{group},
+    'l|list'    => \$opt->{list},
+    'h|help'    => \$opt->{help},
+    'v|version' => \$opt->{version},
+  ) or say ' try connect --help' and exit 1;
+
+  version and exit if $opt->{version};
+  usage(0,'') if $opt->{usage};
+  usage(1,'only --list and --group are mutually exclusive')
+    if ( $opt->{group} and $opt->{list} );
+
+}
+
+# ---------------------------------------------------
+
+sub show_group {
+  my ($list, $group) = @_;
+  my %tmp;
+
+  for my $host ( keys %{$list->{connect}} ) {
+    next unless ($list->{connect}{$host}{group} and $group =~ /$list->{connect}{$host}{group}/i);
+    $tmp{$host}{ip}    = $list->{connect}{$host}{ip};
+    $tmp{$host}{alias} = ($list->{connect}{$host}{alias}) ? $list->{connect}{$host}{alias} : ' ';
+  }
+
+  if ( %tmp ) {
+    for my $host ( sort keys %tmp ) {
+      printf '%10s  %-30s%-18s%s', $tmp{$host}{alias}, $host, $tmp{$host}{ip}, "\n";
+    }
+  }
+  else {
+    say "no members in group = $group"
+  }
+  exit 0;
+}
+
+# ---------------------------------------------------
+
+sub show_list {
+  my $list = shift;
+
+  for my $host ( sort keys %{$list->{connect}} ) {
+    my $alias = ($list->{connect}{$host}{alias}) ? $list->{connect}{$host}{alias} : ' ';
+    my $group = ($list->{connect}{$host}{group}) ? $list->{connect}{$host}{group} : ' ';
+    printf '%10s  %-30s%-18s%8s%s', $alias, $host, $list->{connect}{$host}{ip}, $group, "\n";
+  }
+  exit 0;
+}
+
+# ---------------------------------------------------
+
+sub aliases {
+  my $list = shift;
+  my $alias;
+
+  for my $host ( keys %{$list->{connect}} ) {
+    next unless $list->{connect}{$host}{alias};
+    my $aka = $list->{connect}{$host}{alias};
+    $list->{connect}{$aka}{ip}  = $list->{connect}{$host}{ip};
+    $list->{connect}{$aka}{uid} = $list->{connect}{$host}{uid};
+  }
+
+}
+
+# ---------------------------------------------------
+
+sub main {
+  my %opt;
+  get_options(\%opt);
+
+  say 'environment variable or config file does not exist' and exit 1
+    unless ( -e $ENV{CONNECT_CONFIG} );
+
+  my $list = LoadFile($ENV{CONNECT_CONFIG});
+
+  say 'failed to open config file at '.$ENV{CONNECT_CONFIG} and exit 1
+    unless $list;
+
+  show_group($list, $opt{group}) if $opt{group};
+  show_list($list) if $opt{list};
+
+  my $alias = aliases($list);
+
+#  say("ssh $list->{connect}{$ARGV[0]}{uid}\@$list->{connect}{$ARGV[0]}{ip}") and exit
+  exec("ssh $list->{connect}{$ARGV[0]}{uid}\@$list->{connect}{$ARGV[0]}{ip}")
+    if ( exists $list->{connect}{$ARGV[0]} );
+
+  say "\'$ARGV[0]\' not found in your configuration file";
+}
+
+# ---------------------------------------------------
+
+main;
+

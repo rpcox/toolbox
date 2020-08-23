@@ -1,0 +1,93 @@
+#!/bin/bash
+## jy         [bash] junkyard archiving
+
+this=$(basename $0)
+junkyard=$HOME/.junkyard
+
+function usage {
+  echo "\
+
+ NAME
+     $this - preserve files in $HOME/.junkyard
+
+ SYNOPSIS
+     $this -h
+     $this FILE ....
+
+ DESCRIPTION
+     Copy files and directories to $HOME/.junkyard with a
+     date prefix with format +%Y%m%d%H%M%S. The file or
+     directory will be recursively removed after the copy.
+
+     Directories are recursively copied.  Other files,
+     such as character devices will not be preserved.
+
+     -h - display this usage text
+
+"
+  exit $1
+}
+
+if [ $# -eq 0 ]; then
+  usage 1
+fi
+
+while getopts "ch" opt
+do
+  case $opt in
+    c) echo -n "clean the junkyard? [y/n] "
+       read resp
+
+       case $resp in
+         y|Y) if [ -d $junkyard ]; then
+                cd $junkyard
+                rm -rf *
+                exit 0
+              else
+                echo "junkyard not present. nothing to clean"
+                exit 1
+              fi
+           ;;
+         n|N) exit 0
+           ;;
+           *) echo "invalid response"
+              exit 1
+           ;;
+       esac
+      ;;
+
+    h) usage 0
+      ;;
+
+    *) echo "unknown option"
+       usage 1
+      ;;
+
+  esac
+done
+
+if [ ! -w $HOME ]; then
+  echo 'fatal: unable to write in $HOME' >&2
+  exit 1
+fi
+
+if [ ! -d $junkyard ]; then
+  mkdir $junkyard
+  chmod 700 $junkyard
+fi
+
+for file in $@;
+do
+  if [ -e $file ]; then
+    if [[ -f $file || -d $file ]]; then
+      new_file_name="$junkyard/$file.$(date '+%Y%m%d%H%M%S')"
+      /bin/cp -rf $file $new_file_name
+      /bin/rm -rf $file
+    else
+      echo "$this: $file is not a file or directory" >&2
+    fi
+  else
+    echo "$this: cannot access $file" >&2
+  fi
+done
+

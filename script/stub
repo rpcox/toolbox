@@ -1,0 +1,223 @@
+#!/usr/bin/perl
+## stub.pl    create a working Perl code stub
+
+use 5.014;
+use File::Basename qw/ basename /;
+
+my $version = '1.0';
+
+# ---------------------------------------------------
+
+sub version {
+  say basename($0).' v'.$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+  my ( $code, $msg ) = @_;
+
+  say $msg.' : use '.basename($0).' --help' and exit $code if $msg;
+
+  print<<HERE;
+
+  NAME
+
+    stub - print out a stub module or stup program
+
+  SYNOPSIS
+
+    stub --help | --version
+    stub --module | --program
+
+  DESCRIPTION
+
+   -m, --module
+      Print a module stub.
+
+   -p, --program
+      Print a program stub.
+
+   -h, --help
+      Show this usage information.
+
+   -v, --version
+      Show the version number.
+
+HERE
+
+  exit $code;
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my $opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions(
+    'm|module'  => \$opt->{module},
+    'p|program' => \$opt->{program},
+    'h|help'    => \$opt->{help},
+    'v|version' => \$opt->{version},
+  );
+
+  version and exit if $opt->{version};
+  usage(0,'') if $opt->{help};
+
+  usage(1, ' --program or --module required')
+    unless ( $opt->{module} or $opt->{program} );
+
+}
+
+# ---------------------------------------------------
+
+sub print_program {
+  say<<HERE;
+#!/usr/bin/perl
+
+use 5.014;
+use File::Basename qw/ basename /;
+
+my \$version = '1.0';
+
+# ---------------------------------------------------
+
+sub version {
+  say basename(\$0).' v'.\$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+  my ( \$code, \$msg ) = \@_;
+
+  say \$msg.' : use '.basename(\$0).' --help' and exit \$code if \$msg;
+
+  print<<HERE;
+
+  NAME
+
+    program_name - provide_a_brief_description_here
+
+  SYNOPSIS
+
+    program_name --help | --version
+    program_name --abc | --def FILE
+
+  DESCRIPTION
+
+   -a, --abc
+      Description of the abc switch.
+
+   -d, --def
+      Description of the def switch.
+
+   -h, --help
+      Show this usage information.
+
+   -v, --version
+      Show the version number.
+
+HERE
+
+  say 'HERE';
+
+  say<<HERE;
+  exit \$code;
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my \$opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions(
+    'a|abc'     => \\\$opt->{abc},
+    'd|def=s'   => \\\$opt->{def},
+    'h|help'    => \\\$opt->{help},
+    'v|version' => \\\$opt->{version},
+  );
+
+  version and exit if \$opt->{version};
+  usage(0,'') if \$opt->{usage};
+
+  usage(1, ' --abc or --def, but not both')
+    if ( \$opt->{abc} and \$opt->{def} );
+}
+
+# ---------------------------------------------------
+
+sub do_something {
+  say 'do it';
+}
+
+# ---------------------------------------------------
+
+sub main {
+  my %opt;
+  get_options(\%opt);
+
+  do_something;
+}
+
+# ---------------------------------------------------
+
+main;
+HERE
+}
+
+# ---------------------------------------------------
+
+sub print_module {
+
+  say<<HERE;
+package THIS::THAT;
+
+use 5.014;
+
+use Exporter;
+use vars qw/ \$VERSION \@ISA \@EXPORT \@EXPORT_OK \%EXPORT_TAGS /;
+
+our \$VERSION     = 1.00;
+our \@ISA         = qw/ Exporter /;
+
+our \@EXPORT      = qw/ sub1 sub3 /;
+our \@EXPORT_OK   = qw/ sub2 sub4 sub5 sub6 sub7 /;
+
+our %EXPORT_TAGS = (  odd => [ qw/ sub1 sub3 sub5 sub7 / ],
+	             even => [ qw/ sub2 sub4 sub6      / ],
+	              mix => [ qw/ sub1 sub2 sub3      / ], );
+
+sub sub1 { }
+sub sub2 { }
+sub sub3 { }
+sub sub4 { }
+sub sub5 { }
+sub sub6 { }
+sub sub7 { }
+
+1;
+__END__
+
+HERE
+}
+
+
+# ---------------------------------------------------
+
+sub main {
+  my %opt;
+  get_options(\%opt);
+
+  if ( $opt{program} ) { print_program }
+  elsif ( $opt{module} ) { print_module }
+  else { say "you shouldn't even be here" };
+}
+
+# ---------------------------------------------------
+
+main;

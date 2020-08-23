@@ -1,0 +1,6 @@
+
+tb_list=$TB_HOME/tblist.txt
+tb_tmp=$TB_HOME/.tmp
+sed 's/^[LC] //' $TB_HOME/tblist.txt >$tb_tmp
+eval less $tb_tmp
+rm -f $tb_tmp

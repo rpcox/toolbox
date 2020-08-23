@@ -1,0 +1,166 @@
+#!/usr/bin/perl
+## dedupe     [perl] dedupe a file
+
+use 5.014;
+use File::Basename qw/ basename /;
+use Digest::MD5 qw/ md5_hex /;
+
+my $script  = basename($0);
+my $version = '1.0';
+
+# ---------------------------------------------------
+
+sub version {
+  say $script.' v'.$version;
+}
+
+# ---------------------------------------------------
+
+sub usage {
+  my ( $code, $msg ) = @_;
+
+  say $msg.' : use '.$script.' --help' and exit $code if $msg;
+
+  print<<HERE;
+
+ NAME
+    dedupe - dedupe a file by line
+
+ SYNOPSIS
+    dedupe --help | --version
+    dedupe [--in INPUTFILE] [--out OUTPUT_FILE] [--stats] [--count]
+
+ DESCRIPTION
+    Deduplicate a file by line.  Input may be via pipe or command line, output
+    may be written to file or to STDOUT (default).  By default, ouput is the
+    deduped lines.
+
+
+   -c, --count
+      Optional output.  By default the unsorted duplicate list will be ouput.
+      The count option will produce ouput by descending order of duplicate
+      counts, with the duplicate count of that line.  The format is tab
+      delimited columnar with the following fields.
+
+      MD5  COUNT  LINE
+
+   -i, --in
+      Identify the input file.
+
+   -o, --out
+      Identify the ouput file.
+
+   -s, --stats
+      Print deduping statistics.
+
+   -h, --help
+      Show this usage information.
+
+   -v, --version
+      Show the version number.
+
+ EXAMPLES
+
+   Dedupe input, send to STDOUT, and show the stats
+
+   > dedupe --in FILE --stats
+
+   Dedupe input, show counts and stats
+
+   > dedupe --in FILE --stats --count
+
+HERE
+
+  exit $code;
+}
+
+# ---------------------------------------------------
+
+sub get_options {
+  my $opt = shift;
+
+  use Getopt::Long;
+
+  GetOptions(
+    'i|in=s'    => \$opt->{in},
+    'o|out=s'   => \$opt->{out},
+    'c|count'   => \$opt->{count},
+    's|stats'   => \$opt->{stats},
+    'h|help'    => \$opt->{help},
+    'v|version' => \$opt->{version},
+  ) or usage(1,'');
+
+  version and exit if $opt->{version};
+  usage(0,'') if $opt->{help};
+
+  usage(1,'--count and --out are mutually exclusive')
+    if ( $opt->{count} and $opt->{out} );
+}
+
+# ---------------------------------------------------
+
+sub main {
+  my ( $pipe, $fh_in, $fh_out, %opt ) = ( 0, );
+  get_options(\%opt);
+
+  if ( -t STDIN ) {         # get file name from command line
+    my $file = ( $opt{in} ) ? $opt{in} : $ARGV[0];
+    say 'unable to open '.$file.':'.$! and exit 1
+      unless open($fh_in, '<', $file);
+
+    if ( $opt{out} ) {
+      say 'unable to open '.$opt{out}.':'.$! and exit 1
+        unless open($fh_out, '<', $opt{out});
+    }
+    else {
+      $fh_out = \*STDOUT;
+    }
+  }
+  else {
+    $pipe = 1;
+    $fh_in  = \*STDIN;
+    $fh_out = \*STDOUT;
+  }
+
+  my ( $line_count, $dupe_count, %hash ) = ( 0, 0 );
+
+  while (my $line = <$fh_in>) {
+    $line_count++;
+
+    my $md5 = md5_hex($line);
+
+    if ( exists $hash{$md5} ) {
+      $dupe_count++;
+      $hash{$md5}{count}++;
+    }
+    else {
+      $hash{$md5}{line}  = $line;
+      $hash{$md5}{count} = 1;
+    }
+  }
+
+  if ( $opt{count} ) {
+    for ( sort { $hash{$b}{count} <=> $hash{$a}{count} } keys %hash ) {
+      printf $fh_out '%32s%s%7d%s%s', $_, "\t", $hash{$_}{count}, "\t", $hash{$_}{line}
+    }
+  }
+  else {
+    for ( keys %hash ) {
+      print $fh_out $hash{$_}{line}
+    }
+  }
+
+  unless ( $pipe ) { close $fh_in; close $fh_out; }
+
+  if ( $opt{stats} ) {
+    print "\n";
+    printf STDERR '%7d%s', $line_count,      " : lines in\n";
+    printf STDERR '%7d%s', int( keys %hash), " : lines out\n";
+    printf STDERR '%7d%s', $dupe_count,      " : duplicates\n\n";
+  }
+}
+
+# ---------------------------------------------------
+
+main;
+#SDG

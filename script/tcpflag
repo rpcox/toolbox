@@ -1,0 +1,117 @@
+#!/usr/bin/perl -w
+## tcpflag - decode tcp flags from hex
+
+use strict;
+
+# How to remember your flags .... UAPRST
+# Ugly Attackers Pester Real Security Folks
+# worked until ECN, CWR and NS came into play
+
+sub usage() {
+  print<<HERE;
+
+  Usage : tcpflag hex_number | FLAG+FLAG+... | list
+
+  Examples:
+
+  > tcpflag 0x12
+  RES1 RES2 RES3 NS CWR ECN URG ACK PSH RST SYN FIN
+                                 *           *
+  > tcpflag 14
+  RES1 RES2 RES3 NS CWR ECN URG ACK PSH RST SYN FIN
+                                 *       *
+  > tcpflag 1001
+  1001 is out of range
+
+  > ./tcpflag FIN+ACK
+  011
+
+  > tcpflag list
+  RES1  0x800
+  RES2  0x400
+  RES3  0x200
+    NS  0x100
+   CWR  0x080
+   ECN  0x040
+   URG  0x020
+   ACK  0x010
+   PSH  0x008
+   RST  0x004
+   SYN  0x002
+   FIN  0x001
+
+HERE
+
+  exit
+}
+
+
+my @tcp_flags = qw/RES1 RES2 RES3 NS CWR ECN URG ACK PSH RST SYN FIN/;
+my %tcp_value_by_flag = (
+  FIN  => 0x001,  #    1 - Finish - finished.  no more data
+  SYN  => 0x002,  #    2 - Synchronize - first step in establishing 3 way handshake
+  RST  => 0x004,  #    4 - Reset - receiver response to unexptected packet
+  PSH  => 0x008,  #    8 - Push - tell receiver to process these as received ( kind of urgent )
+  ACK  => 0x010,  #   16 - Acknowledge - acknowledge receipt of a packet
+  URG  => 0x020,  #   32 - Urgent - notify receiver to process the urgent data.  RFC 6093
+  ECN  => 0x040,  #   64 - Echo - inticate peer is ECN capable.  RFC 3168
+  CWR  => 0x080,  #  128 - Congestion Window Reduced - confirm ECN flag received.  RFC 3168
+  NS   => 0x100,  #  256 - Nonce Sum - experimental.  malicious packet concealment protection. RFC 3540
+  RES3 => 0x200,  #  512 - Reserved
+  RES2 => 0x400,  # 1024 - Reserved
+  RES1 => 0x800,  # 2048 - Reserved
+);
+
+my $input = $ARGV[0];
+
+if ( $input ) {
+  $input = uc $input;
+
+  if ( $input =~ /^(0x)?[a-f0-9]+$/i ) {           # hex value => gimme the flag layout
+    $input = hex $input;
+
+    print ((sprintf '%X',$input), ' is out of range', "\n") and exit
+     unless ( $input < 0xFFF );
+
+    print join(' ', @tcp_flags), "\n";
+    for my $bit ( @tcp_flags ) {
+      if ( $tcp_value_by_flag{$bit} & $input ) {
+        print ' *', ( ' ' x ( length($bit) - 1 ));
+        next
+      }
+
+      print ' ' x ( length($bit) + 1 )
+    }
+    print "\n";
+  }
+  elsif ( $input =~ /(\-h|--help|help)/i ) {       # print usage
+    usage
+  }
+  elsif ( $input =~ /list/i ) {                    # list all flags and values
+    foreach my $flag ( @tcp_flags ) {
+      my $hex = sprintf '0x%03X', $tcp_value_by_flag{$flag};
+      printf '%5s  %s%s', $flag, $hex,"\n";
+    }
+  }
+  elsif ( $input =~ /^[\w\+]+$/) {                 # FLAG+FLAG+... => gimme the hex value
+    my @flags = split /\+/, $input;
+    my $sum = 0;
+
+    foreach my $flag ( @flags ) {
+      print 'unknown flag => ' . $flag . "\n" and exit
+        unless ( $tcp_value_by_flag{$flag} );
+      $sum += $tcp_value_by_flag{$flag}
+    }
+
+    printf '%03X%s', $sum, "\n";
+  }
+  else {
+    print 'invalid input =>', $input, "\n" and exit
+  }
+}
+else {
+  usage
+}
+
+
+

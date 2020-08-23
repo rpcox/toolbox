@@ -1,0 +1,26 @@
+#!/bin/bash
+# inpath     determine if executable is in $PATH. $?=0 yes, $?=1 no
+# sometimes 'which' doesn't do what you think
+
+if [ -z $1 ]; then
+  echo "usage: inpath COMMAND" >&2
+  exit 1
+fi
+
+tmp_IFS=$IFS
+IFS=":"
+retval=1
+
+for dir in $PATH
+do
+  if [[ -x $dir/$1 ]]; then
+    retval=0
+    echo "$dir/$1"
+    break
+  fi
+done
+
+exit $retval
+
+
+

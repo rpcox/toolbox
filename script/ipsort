@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+use 5.014;
+my (@list, %bag);
+
+while (<>) {
+  next if /^$/;
+  chomp;
+  my @quad = split /\./;
+  say 'drop: '.$_ and next unless $quad[0];  # not an IPv4 or not an IP
+
+  foreach (@quad) {
+    if ( $_ <= 9 ) { $_ = '00'.$_;  }
+    elsif ( $_ < 100 ) { $_ = '0'.$_; }
+  }
+
+  $bag{join('', @quad)}++;
+}
+
+foreach ( sort keys %bag ) {
+  my @quad;
+
+  foreach (/(\d{3})/g) {
+    $_ =~ s/^0*([0-9]+)/$1/;
+    push @quad, $_
+  }
+
+  say join '.', @quad;
+}

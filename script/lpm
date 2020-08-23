@@ -1,0 +1,9 @@
+#!/usr/bin/perl -lw
+#
+# lpm        list every Perl module you can find
+#
+use strict;
+use File::Find;
+use File::Spec::Functions;
+
+find( {wanted => sub { print canonpath $_ if /\.pm\z/}, no_chdir => 1}, @INC );

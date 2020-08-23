@@ -1,0 +1,186 @@
+#!/usr/bin/perl -w
+## summarize  -  summarize a set of IP addresses
+
+use strict;
+use Net::IP qw/ip_is_ipv4/;
+
+# -----------------------------------------------------------------
+
+sub version () {
+  print 'summarize v 0.1' . "\n" ;
+}
+
+# -----------------------------------------------------------------
+
+sub usage ($$) {
+  my ($code, $msg ) = @_;
+
+  print $msg . "\n";
+
+  print STDERR <<EOM;
+
+ Usage: summarize --mask /DD FILE
+
+ -m, --mask      Form of '/DD' where 32 <= DD >= 8
+ -h, --help      This usage information
+ -v, --version   Version information
+
+ If FILE contains the following list
+
+  9.1.1.1
+  9.1.1.8
+  9.1.1.129
+  9.1.1.132
+  1.9.1.1
+  1.1.9.1
+  1.1.1.9
+  192.168.1.100
+  192.168.1.125
+
+ then
+
+  > summarize -m /16 summarize_test_data
+     COUNT	CIDR
+         4	9.1.0.0/16
+         2	1.1.0.0/16
+         1	1.9.0.0/16
+         2	192.168.0.0/16
+
+EOM
+
+  exit( $code );
+}
+
+# -----------------------------------------------------------------
+
+sub bit_range_check ($) {
+  my ( $mask ) = @_;
+
+  my $digits = $1 if $mask =~ /\/(\d+)/;
+  return 1 if ( $digits <= 32 and $digits >= 8 );
+  return 0
+}
+
+# -----------------------------------------------------------------
+
+sub get_command_line ($) {
+  my ( $opt_ref ) = @_;
+
+  use Getopt::Long;
+
+  GetOptions (
+    "m|mask=s"    => \$opt_ref->{mask},
+    "h|help"      => \$opt_ref->{help},
+    "v|version"   => \$opt_ref->{version},
+  ) or usage(0, '');
+
+  version and exit(0) if $opt_ref->{version};
+  usage(0, '') if $opt_ref->{help};
+
+  usage(0, '--mask option required')
+    unless ( $opt_ref->{mask} );
+
+  usage(0, 'mask must be of form /NN')
+    unless ( $opt_ref->{mask} =~ /^\/\d+$/ );
+
+    $opt_ref->{mask} =~ /^\/(\d+)$/;
+    my $digits = $1;
+
+  usage(0, 'mask not within limits ( 32 <= mask >= 8 )')
+    unless ( bit_range_check($opt_ref->{mask} ) );
+}
+
+# -----------------------------------------------------------------
+
+sub mask_to_bits ($) {
+  my ( $mask ) = @_;
+
+  $mask =~ /\/(\d+)/;
+  return ( 0xFFFFFFFF & ( 0xFFFFFFFF << ((32 - int $1 ) + 0 )));
+}
+
+# -----------------------------------------------------------------
+
+sub ip_to_int ($) {
+  my ( $ip ) = @_;
+
+  my @quads = split /\./, $ip;
+  my ( $integer, $shift ) = ( 0, 24 );
+
+  foreach my $quad ( @quads ) {
+    my $temp = $quad << $shift;
+    $integer |= $temp;
+    $shift -= 8;
+  }
+
+  return $integer;
+}
+
+# -----------------------------------------------------------------
+
+sub int_to_ip ($) {
+  my ( $integer ) = @_;
+
+  my ( $quad, @quads );
+
+  foreach ( 1..4 ) {
+    $quad = $integer & 0xFF;
+    unshift @quads, $quad;
+    $integer = $integer >> 8;
+  }
+
+  return join ('.', @quads );
+}
+
+# -----------------------------------------------------------------
+
+sub insert_ip ($$$) {
+  my ( $hash_ref, $integer, $mask ) = @_;
+
+  my $bitmask = mask_to_bits($mask);
+  $integer = $integer & $bitmask;
+
+  my $key = sprintf '%d', $integer;
+
+  if ( $hash_ref->{$key} ) {
+    $hash_ref->{$key}{ip_count}++;
+  }
+  else {
+    $hash_ref->{$key}{as_int}   = $integer;
+    $hash_ref->{$key}{ip_count} = 1;
+    $hash_ref->{$key}{bitmask} = $bitmask;
+  }
+}
+
+# -----------------------------------------------------------------
+
+sub main () {
+
+  my ( %opts, %ip );
+  get_command_line(\%opts);
+
+  while (my $item = <>) {
+    next if ( $item =~ /^$/ );
+    chomp $item;
+
+    my ( $integer, $int_string );
+
+    if ( ip_is_ipv4($item) ) {
+      $integer = ip_to_int($item);
+      insert_ip( \%ip, $integer, $opts{mask});
+    }
+    else {
+      print STDERR $item . ' is not an IPv4 address. skipping' . "\n";
+    }
+  }
+
+  printf '%10s%s%s%s', 'COUNT', "\t", 'CIDR', "\n";
+
+  foreach ( sort keys %ip ) {
+    printf '%10d%s%s%s%s', $ip{$_}{ip_count}, "\t", int_to_ip($ip{$_}{as_int}), $opts{mask}, "\n";
+  }
+
+}
+
+main;
+#SDG

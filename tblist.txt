@@ -1,0 +1,52 @@
+C abc2dec     Convert spreadsheet column to decimal (abc2def --help)
+L atime       Get the last access time for a file
+C avg         Calculate the average for a set of numbers
+C chmog       chmod, chgrp, chown all at once
+C cipher      Encrypt / decrypt data
+C connect     Connect to hosts via SSH
+C cp1252      Generate Windows CP1252 character set
+L ctime       Get the inode change time for a file
+C dedupe      Dedupe a file by line
+C dupes       Show the dupes in a file
+C def         Get the definition of a word from dict.org
+C devid       Run file test operators to determine a FILE type
+L d2m         Convert DOS CRLF to Mac CR
+L d2u         Convert DOS CRLF to UNIX LF
+C endian      Determine system endian
+C epoch       Seconds since 1970-01-01 00:00:00 in the local time zone
+C epoch2iso   Convert the local epoch to ISO UTC +0
+C extract     Extract an archive
+C findmod     Find a Perl module
+L ftime       Get the access, inode change, and modify times for a fle
+C get_pw      Password prompting
+C icmp4       ICMP v4 type and code lookup
+C inc         Show Perl @INC
+C inpath      Determine if a file is in the $PATH
+C ipsort      Sort a list of IPv4 addresses
+C jd          Julian date
+C json2perl   Convert JSON to a Perl structure
+C jy          Move files to $HOME/.junkyard
+C lc          Convert char STRING string to lower case
+C level       Show the current shell depth
+C luhn        Validate a credit card number
+C lpm         Find every Perl module on the system
+L m2d         Convert Mac CR to DOS CRLF
+L m2u         Convert Mac CR to UNIX LF
+C md5line     Calculate MD5 hashes for words and phrases
+L mtime       Get the last modification time for a file
+C now         Display current time in UTC +0 and the local time zone
+C rhash       Recursively hash a directory structure
+C sdev        Calculate the standard deviation of a set of numbers
+C sf          Swap two files
+C shebang     Add the shebang you forgot to put in a script
+C stub        Make a quick short Perl script or module stub
+C tartar      Copy one directory tree to another location
+C tb          View Toolbox tool list
+C tcpflag     Decode TCP flags from hex
+C timez       Show time across various locations of the globe
+C tnl         Get a TOR node list
+L u2d         Convert UNIX LF to DOS CRLF
+L u2m         Convert UNIX LF to Mac CR
+C uc          Convert char STRING to upper case
+C ucfirst     Uppercase the first letter of a char STRING
+C utc         Convert times to different time zones

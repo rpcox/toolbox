@@ -1,0 +1,35 @@
+#!/bin/bash
+# Recursively hash a directory structure.  Files only.
+# usage: usage: recurse_hash START_DIR [md5|sha1|sha256|sha512]
+## rhash      [bash] perform a recursive hash of files in a directory tree
+
+START_DIR=$1
+HASH=$2
+
+function usage () {
+  printf 'usage: rhash START_DIR [md5|sha1|sha256|sha512]\n'
+  exit
+}
+
+if [[ -z $START_DIR || -z $HASH ]]; then
+  usage
+fi
+
+case $HASH in
+  sha1)
+    HASH=/usr/bin/shasum ;;
+  sha256)
+    HASH="/usr/bin/shasum -a 256" ;;
+  sha512)
+    HASH="/usr/bin/shasum -a 512" ;;
+  md5)
+    HASH=/usr/bin/md5sum ;;
+    *)
+    usage
+    exit ;;
+esac
+
+
+/usr/bin/find $START_DIR -type f -exec $HASH {} +;
+
+#SDG

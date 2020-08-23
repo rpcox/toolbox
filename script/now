@@ -1,0 +1,5 @@
+#!/bin/bash
+## now        show the date/time in UTC +0 and at UTC local
+
+date -u "+%F %T %Z %z"
+date "+%F %T UTC %z"

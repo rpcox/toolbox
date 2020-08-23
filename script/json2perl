@@ -1,0 +1,8 @@
+#!/usr/bin/perl
+## json2perl   convert JSON to a perl structure
+
+use 5.014;
+use Data::Dumper;
+use JSON qw/ decode_json /;
+
+print Dumper decode_json(<>);

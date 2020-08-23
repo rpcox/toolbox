@@ -1,0 +1,20 @@
+#!/usr/bin/perl -w
+# avg - Calculate the average for a set of numbers
+#
+# usage:  avg FILE
+#         cat FILE | avg
+#
+use strict;
+my ( $count, $sum );
+
+while (my $line = <>) {
+  next if ( $line !~ /[0-9,]/ );
+  chomp $line;
+  $line =~ s/,//g;
+  $count++;
+  $sum += $line;
+}
+
+print $sum / $count . "\n"
+
+

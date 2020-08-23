@@ -1,0 +1,1510 @@
+#!/usr/bin/perl -w
+## icmp4      [perl] print the ICMP4 type codes and description
+
+use strict;
+
+# ICMP4 status as of 2017-12-13
+
+my %icmp4 = (
+   '0_0' => {
+       type   => 'echo reply',
+       desc   => 'echo reply',
+       status => 'current',
+       },
+    '1' => {
+       type   => '',
+       desc   => 'reserved',
+       status => 'unassigned',
+       },
+    '2' => {
+       type   => '',
+       desc   => 'reserved',
+       status => 'unassigned',
+       },
+   '3_0' => {
+       type   => 'destination unreachable',
+       desc   => 'destination network unreachable',
+       status => 'current',
+       },
+   '3_1' => {
+       type   => 'destination unreachable',
+       desc   => 'destination host unreachable',
+       status => 'current',
+       },
+   '3_2' => {
+       type   => 'destination unreachable',
+       desc   => 'destination protocol unreachable',
+       status => 'current',
+       },
+   '3_3' => {
+       type   => 'destination unreachable',
+       desc   => 'destination port unreachable',
+       status => 'current',
+       },
+   '3_4' => {
+       type   => 'destination unreachable',
+       desc   => 'fragmentation required and DF flag set',
+       status => 'current',
+       },
+   '3_5' => {
+       type   => 'destination unreachable',
+       desc   => 'source route failed',
+       status => 'current',
+       },
+   '3_6' => {
+       type   => 'destination unreachable',
+       desc   => 'destination network unknown',
+       status => 'current',
+       },
+   '3_7' => {
+       type   => 'destination unreachable',
+       desc   => 'destination host unknown',
+       status => 'current',
+       },
+   '3_8' => {
+       type   => 'destination unreachable',
+       desc   => 'source host isolated',
+       status => 'current',
+       },
+   '3_9' => {
+       type   => 'destination unreachable',
+       desc   => 'network administratively prohibited',
+       status => 'current',
+       },
+  '3_10' => {
+       type   => 'destination unreachable',
+       desc   => 'host administratively prohibited',
+       status => 'current',
+       },
+  '3_11' => {
+       type   => 'destination unreachable',
+       desc   => 'network unreachable for ToS',
+       status => 'current',
+       },
+  '3_12' => {
+       type   => 'destination unreachable',
+       desc   => 'host unreachable for ToS',
+       status => 'current',
+       },
+  '3_13' => {
+       type   => 'destination unreachable',
+       desc   => 'communication administratively prohibited',
+       status => 'current',
+       },
+  '3_14' => {
+       type   => 'destination unreachable',
+       desc   => 'host precedence violation',
+       status => 'current',
+       },
+  '3_15' => {
+       type   => 'destination unreachable',
+       desc   => 'precedence cutoff in effect',
+       status => 'current',
+       },
+   '4_0' => {
+       type   => 'source quench',
+       desc   => 'source quench (congestion control)',
+       status => 'depreciated',
+       },
+   '5_0' => {
+       type   => 'redirect message',
+       desc   => 'redirect datagram for the network',
+       status => 'current',
+       },
+   '5_1' => {
+       type   => 'redirect message',
+       desc   => 'redirect datagram for the host',
+       status => 'current',
+       },
+   '5_2' => {
+       type   => 'redirect message',
+       desc   => 'redirect datagram for the ToS & network',
+       status => 'current',
+       },
+   '5_3' => {
+       type   => 'redirect message',
+       desc   => 'redirect datagram for the ToS & host',
+       status => 'current',
+       },
+    '6' => {
+       type   => '',
+       desc   => 'alternate host address',
+       status => 'depreciated',
+       },
+
+    '7' => {
+       type   => '',
+       desc   => 'reserved',
+       status => 'unassiged',
+       },
+   '8_0' => {
+       type   => 'echo request',
+       desc   => 'echo request',
+       status => ' ',
+       },
+   '9_0' => {
+       type   => 'echo request',
+       desc   => 'echo request',
+       status => 'current',
+       },
+  '10_0' => {
+       type   => 'router solicitation',
+       desc   => 'router discovery/selection/solicitation',
+       status => 'current',
+       },
+  '11_0' => {
+       type   => 'time exceeded',
+       desc   => 'time expired in transit',
+       status => 'current',
+       },
+  '11_1' => {
+       type   => 'time exceeded',
+       desc   => 'fragment reassembly time exceeded',
+       status => 'current',
+       },
+  '12_0' => {
+       type   => 'parameter problem: bad IP header',
+       desc   => 'pointer indicates the error',
+       status => 'current',
+       },
+  '12_1' => {
+       type   => 'parameter problem: bad IP header',
+       desc   => 'missing a require option',
+       status => 'current',
+       },
+  '12_2' => {
+       type   => 'parameter problem: bad IP header',
+       desc   => 'bad length',
+       status => 'current',
+       },
+  '13_0' => {
+       type   => 'timestamp',
+       desc   => 'timestamp',
+       status => 'current',
+       },
+  '14_0' => {
+       type   => 'timestamp reply',
+       desc   => 'timestamp reply',
+       status => 'current',
+       },
+  '15_0' => {
+       type   => 'information request',
+       desc   => 'information request',
+       status => 'depreciated',
+       },
+  '16_0' => {
+       type   => 'information reply',
+       desc   => 'information reply',
+       status => 'depreciated',
+       },
+  '17_0' => {
+       type   => 'address mask request',
+       desc   => 'address mask request',
+       status => 'depreciated',
+       },
+  '18_0' => {
+       type   => 'address mask reply',
+       desc   => 'address mask reply',
+       status => 'depreciated',
+       },
+  '19_0' => {
+       type   => '',
+       desc   => 'reserved for security',
+       status => 'reserved',
+       },
+   '20' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '21'=> {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '22'=> {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '23' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '24' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '25' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '26' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '27' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '28' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+   '29' => {
+       type   => '',
+       desc   => 'reserved for robustness experiment',
+       status => 'reserved',
+       },
+  '30_0' => {
+       type   => 'traceroute',
+       desc   => 'information request',
+       status => 'depreciated',
+       },
+   '31' => {
+       type   => '',
+       desc   => 'datagram conversion error',
+       status => 'depreciated',
+       },
+   '32' => {
+       type   => '',
+       desc   => 'mobile host redirect',
+       status => 'depreciated',
+       },
+   '33' => {
+       type   => '',
+       desc   => 'where are you',
+       status => 'depreciated',
+       },
+   '34' => {
+       type   => '',
+       desc   => 'here I am',
+       status => 'depreciated',
+       },
+   '35' => {
+       type   => '',
+       desc   => 'mobile registration request',
+       status => 'depreciated',
+       },
+   '36' => {
+       type   => '',
+       desc   => 'mobile registration reply',
+       status => 'depreciated',
+       },
+   '37' => {
+       type   => '',
+       desc   => 'domain name request',
+       status => 'depreciated',
+       },
+   '38' => {
+       type   => '',
+       desc   => 'domain name reqply',
+       status => 'depreciated',
+       },
+   '39' => {
+       type   => '',
+       desc   => 'SKIP algorithm discovery protocol',
+       status => 'depreciated',
+       },
+   '41' => {
+       type   => '',
+       desc   => 'ICMP for experimental mobility protocols',
+       status => 'experimental',
+       },
+   '42' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '43' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '44' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '45' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '46' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '47' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '48' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '49' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '50' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '51' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '52' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '53' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '54' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '55' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '56' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '57' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '58' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '59' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '60' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '61' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '62' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '63' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '64' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '65' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '66' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '67' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '68' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '69' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '70' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '71' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '72' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '73' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '74' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '75' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '76' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '77' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '78' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '79' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '80' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '81' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '82' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '83' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '84' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '85' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '86' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '87' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '88' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '89' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '90' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '91' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '92' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '93' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '94' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '95' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '96' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '97' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '98' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+   '99' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '100' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '101' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '102' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '103' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '104' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '105' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '106' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '107' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '108' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '109' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '110' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '111' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '112' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '113' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '114' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '115' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '116' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '117' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '118' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '119' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '120' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '121' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '122' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '123' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '124' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '125' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '126' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '127' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '128' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '129' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '130' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '131' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '132' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '133' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '134' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '135' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '136' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '137' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '138' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '139' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '140' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '141' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '142' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '143' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '144' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '145' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '146' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '147' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '148' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '149' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '150' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '151' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '152' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '153' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '154' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '155' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '156' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '157' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '158' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '159' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '160' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '161' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '162' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '163' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '164' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '165' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '166' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '167' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '168' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '169' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '170' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '171' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '172' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '173' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '174' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '175' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '176' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '177' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '178' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '179' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '180' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '181' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '182' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '183' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '184' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '185' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '186' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '187' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '188' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '189' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '190' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '191' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '192' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '193' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '194' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '195' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '196' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '197' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '198' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '199' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '200' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '201' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '202' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '203' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '204' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '205' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '206' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '207' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '208' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '209' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '210' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '211' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '212' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '213' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '214' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '215' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '216' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '217' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '218' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '219' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '220' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '221' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '222' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '223' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '224' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '225' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '226' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '227' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '228' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '229' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '230' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '231' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '232' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '233' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '234' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '235' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '236' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '237' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '238' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '239' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '240' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '241' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '242' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '243' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '244' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '245' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '246' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '247' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '248' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '249' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '250' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '251' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '252' => {
+       type     => '',
+       desc     => 'reserved',
+       status   => 'unassigned',
+       },
+  '253' => {
+       type   => '',
+       desc   => 'RFC3692-style experiment 1',
+       status => 'experimental',
+       },
+  '254' => {
+       type   => '',
+       desc   => 'RFC3692-style experiment 2',
+       status => 'experimental',
+       },
+  '255' => {
+       type   => '',
+       desc   => 'reserved',
+       status => 'reserved',
+       },
+);
+
+sub version() {
+  print 'icmp4 v 1.0' . "\n";
+}
+
+
+sub usage ($$) {
+  my ( $exit_code, $message ) = @_;
+
+  if ( $message ) {
+  	print $message . ". try 'icmp4 -h'\n";
+  }
+  else {
+    print<<"HERE";
+
+    NAME
+
+        icmp4 - report icmp4 type, code, description and status
+
+    SYNOPSIS
+
+        icmp4 --type TYPE --code CODE
+
+    DESCRIPTION
+
+        -c, --code     CODE = ICMP v4 sub code
+        -h, --help     Print this message
+        -t, --type     TYPE = ICMP v4 type code
+        -v, --version  Print the program version
+
+    EXAMPLES
+
+    > icmp4 --type 2
+
+         icmp4 = 2
+     icmp type =
+          desc = reserved
+        status = unassigned
+
+     > icmp4 -t 3 -c 3
+
+         icmp4 = 3 3
+     icmp type = destination unreachable
+          desc = destination port unreachable
+        status = current
+
+    SEE ALSO
+
+        RFC 792, Internet Control Message Protocol
+        RFC 950, Internet Standard Subnetting Procedure
+        RFC 1016, Something a Host Could Do with Source Quench: The Source Quench Introduced Delay (SQuID)
+        RFC 1122, Requirements for Internet Hosts – Communication Layers
+        RFC 1716, Towards Requirements for IP Routers
+        RFC 1812, Requirements for IP Version 4 Routers
+
+        IANA ICMP parameters   => http://www.iana.org/assignments/icmp-parameters
+        IANA protocol numbers  => http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xml
+        ICMP redirect behaviour explanation => http://support.microsoft.com/kb/195686
+
+HERE
+  }
+
+  exit($exit_code)
+}
+
+
+sub get_opts($) {
+  my ( $opt_ref ) = @_;
+
+  use Getopt::Long;
+
+  GetOptions (
+    "type=s"  => \$opt_ref->{type},
+    "code=s"  => \$opt_ref->{code},
+    "help"    => \$opt_ref->{help},
+    "version" => \$opt_ref->{version},
+  ) or usage(0, 'unknown argument');
+
+  version and exit if ( $opt_ref->{version} );
+  usage(0,'') if ( $opt_ref->{help} );
+
+  usage(0, '--type required' )
+    if ( not defined $opt_ref->{type} );
+
+  usage(0, '--type argument must be an integer' )
+    unless( $opt_ref->{type} =~ /^[0-9]+$/ );
+
+  if ( $opt_ref->{code} ) {
+    usage(0, '--code argument must be an integer' )
+      unless( $opt_ref->{code} =~ /^[0-9]+$/ );
+  }
+}
+
+
+sub main {
+  my ( %opts, $lookup );
+  get_opts(\%opts);
+
+  if ( defined $opts{code} ) {
+    $lookup = $opts{type} .'_'. $opts{code}
+  }
+  else {
+    $lookup = $opts{type}
+  }
+
+  if ( $icmp4{$lookup} ) {
+    print "\n" . '     icmp4 = ' . $opts{type} . ' ' . ( ( defined $opts{code} )? $opts{code} : '' );
+    print "\n" . ' icmp type = ' . $icmp4{$lookup}{type};
+    print "\n" . '      desc = ' . $icmp4{$lookup}{desc};
+    print "\n" . '    status = ' . $icmp4{$lookup}{status} . "\n\n";
+  }
+  else {
+  	print 'That icmp4 type, code or combination does not exist.' . "\n" .
+  	      'Perhaps you should review the relevant RFCs.' . "\n";
+  }
+}
+
+
+main;
+#SDG
