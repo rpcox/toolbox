@@ -109,9 +109,9 @@ sub show_group {
     for my $host ( sort keys %tmp ) {
       printf ' %6s %-16s %-30s %-8s %-8s %s %s', $tmp{$host}{alias},
                                                  $host,
-                                                 $tmp{$host}{domain},
+                                                 uc $tmp{$host}{domain},
                                                  $tmp{$host}{location},
-                                                 $tmp{$host}{group},
+                                                 uc $tmp{$host}{group},
                                                  $tmp{$host}{ip}, "\n";
     }
   }
@@ -132,7 +132,7 @@ sub show_list {
     my $domain = ($list->{connect}{$host}{domain})   ? $list->{connect}{$host}{domain}   : ' ';
     my $loc    = ($list->{connect}{$host}{location}) ? $list->{connect}{$host}{location} : ' ';
 
-    printf ' %6s %-16s %-30s %-8s %-8s %s %s', $alias, $host, $domain, $loc, $group, $list->{connect}{$host}{ip}, "\n";
+    printf ' %6s %-16s %-30s %-8s %-8s %s %s', $alias, uc $host, $domain, $loc, uc $group, $list->{connect}{$host}{ip}, "\n";
   }
   exit 0;
 }
