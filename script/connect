@@ -171,6 +171,8 @@ sub main {
 
   my $alias = aliases($list);
 
+  say 'missing host to connect to' and exit unless $ARGV[0];
+
 #  say("ssh $list->{connect}{$ARGV[0]}{uid}\@$list->{connect}{$ARGV[0]}{ip}") and exit
   exec("ssh $list->{connect}{$ARGV[0]}{uid}\@$list->{connect}{$ARGV[0]}{ip}")
     if ( exists $list->{connect}{$ARGV[0]} );
