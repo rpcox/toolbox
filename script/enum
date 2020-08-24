@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+
+use 5.014;
+
+my $n = 1;
+while (<>) { printf '%5d %s', $n, $_; $n++ }
