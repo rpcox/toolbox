@@ -13,6 +13,7 @@ C devid       Run file test operators to determine a FILE type
 L d2m         Convert DOS CRLF to Mac CR
 L d2u         Convert DOS CRLF to UNIX LF
 C endian      Determine system endian
+C enum        Enumerate lines of a file
 C epoch       Seconds since 1970-01-01 00:00:00 in the local time zone
 C epoch2iso   Convert the local epoch to ISO UTC +0
 C extract     Extract an archive
