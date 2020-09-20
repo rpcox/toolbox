@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -z $STY ]; then
+  echo $STY
+else
+  echo 'screen not running in this window'
+fi

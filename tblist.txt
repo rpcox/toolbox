@@ -38,6 +38,7 @@ L mtime       Get the last modification time for a file
 C now         Display current time in UTC +0 and the local time zone
 C rhash       Recursively hash a directory structure
 C sdev        Calculate the standard deviation of a set of numbers
+C scrid       Show STY if screen is running
 C sf          Swap two files
 C shebang     Add the shebang you forgot to put in a script
 C stub        Make a quick short Perl script or module stub
