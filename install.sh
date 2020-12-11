@@ -32,7 +32,7 @@ function lnit {
     ln -s $home/script/$tool $tool
   fi
 
-  [ -e $tool ] && echo "success" || echo "fail"
+  [ -e $tool ] && echo "ok" || echo "not_ok"
   cd $home
 }
 
@@ -97,13 +97,7 @@ done < ./tblist.txt
 tools=$(echo "${!toolbox[@]}" | sort)
 
 for key in $tools; do
-#  if [[ ${toolbox[$key]} == "L" ]]; then
-#    lnit $key
-#  elif [[ ${toolbox[$key]} == "C" ]]; then
-    #cpit $key
- #   lnit $key
-echo $key
-#  fi
+    lnit $key
 done
 
 echo; echo " Toolbox Installation complete $date_stamp"; echo
