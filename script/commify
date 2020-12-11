@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+
+use 5.014;
+my $exit_code = 0;
+
+sub commify {
+  my $n0 = shift;
+  $n0 =~ s/\s+$//;
+
+  if ($n0 =~ /^\d+$/) {
+    my $n1 = reverse $n0;
+    $n1 =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
+    return scalar reverse $n1;
+  }
+  else {
+   $exit_code = 1;
+   return $n0
+  }
+}
+
+
+
+if ( $ARGV[0] ) {
+  say commify $ARGV[0]
+}
+else {
+  while (<>) {
+    say commify $_ unless /^$/;
+  }
+}
+
+exit $exit_code;
