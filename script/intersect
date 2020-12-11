@@ -9,6 +9,10 @@ use 5.014;
 use Digest::MD5 qw/ md5_hex /;
 
 my ( $file1, $file2 ) = ( $ARGV[0], $ARGV[1] );
+if ( ! $file1 || ! $file2 ) {
+  say "usage: union FILE_A FILE_B";
+  exit 1;
+}
 
 # -----------------------------------------------
 # Load the lines of a file into a hash
