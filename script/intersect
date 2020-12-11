@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+#
+# Line by line, find the intersection between two text files
+#
+#  Usage: intersect FILE_A.txt FILE_B.txt
+# Output: stdout
+#
+use 5.014;
+use Digest::MD5 qw/ md5_hex /;
+
+my ( $file1, $file2 ) = ( $ARGV[0], $ARGV[1] );
+
+# -----------------------------------------------
+# Load the lines of a file into a hash
+
+sub load {
+  my ($file_name, $set) = @_;
+
+  open(my $fh, '<', $file_name) or die "unable to open $file_name: $!";
+  while (my $line = <$fh>) {
+    $line =~ s/\s+$//;
+    $set->{md5_hex($line)} = $line;
+  }
+
+  close $fh;
+}
+
+
+if ( -e $file1 && -e $file2 ) {
+  my (%set1, %set2);
+  load($file1, \%set1);
+  load($file2, \%set2);
+
+  foreach my $key (keys %set1) {
+    say $set2{$key} if ( $set2{$key} )
+  }
+}
+else {
+  say "$file1 or $file2 does not exist";
+  exit 1;
+}
