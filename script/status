@@ -1,0 +1,11 @@
+echo
+
+printf "   System Load: %.2f\n" $(uptime  | grep -Po '\d+\.\d\d' | sed -n 1p)
+printf "     Processes: %d\n"   $(ps -ef | wc -l)
+printf "       / Usage: %s\n"   $(df | grep '\/$' | grep -Po '\d+\%')
+printf "     Mem Usage: %.2f\n" $(free | grep Mem | awk '{print 100 * $3 / $2}')
+printf "    Swap Usage: %.2f\n" $(free | grep Swap | perl -ne '/Swap:\s+(\d+)\s+(\d+)/; if($1){print 100*$2/$1}else{print "0.0"}')
+printf "    User Count: %d\n"   $(w | grep -iv USER | cut -d ' ' -f 1 | sort -u | wc -l)
+printf "    IP Address: %s\n"   $(ip a | grep "scope global" | grep -Po '(\d+\.)+\d+\/\d+')
+echo
+
