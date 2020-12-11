@@ -5,6 +5,7 @@ chmog       chmod, chgrp, chown all at once
 cipher      Encrypt / decrypt data
 connect     Connect to hosts via SSH
 cp1252      Generate Windows CP1252 character set
+commify     Commify a string of decimal numbers
 count       MD5 hash and count unique lines
 ctime       Get the inode change time for a file
 dedupe      Dedupe a file by line
