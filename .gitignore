@@ -1,7 +1,7 @@
 /*
 
 !/.gitignore
-!/install
+!/install.sh
 !/script
 !/tblist.txt
 !/README.md
