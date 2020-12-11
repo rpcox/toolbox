@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+use 5.014;
+use Digest::MD5 qw/ md5_hex /;
+
+my %thingy;
+
+while (<>) {
+  chomp;
+  $thingy{$_}++;
+}
+
+foreach ( sort {$thingy{$b} <=> $thingy{$a}} keys %thingy ) {
+  printf '%s%s%s%s%s%s', md5_hex($_), "\t", $thingy{$_}, "\t", $_, "\n"
+}
