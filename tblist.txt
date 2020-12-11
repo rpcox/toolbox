@@ -25,6 +25,7 @@ get_pw      Password prompting
 icmp4       ICMP v4 type and code lookup
 inc         Show Perl @INC
 inpath      Determine if a file is in the $PATH
+intersect   Find the intersection between two text files
 ipsort      Sort a list of IPv4 addresses
 jd          Julian date
 json2perl   Convert JSON to a Perl structure
@@ -54,4 +55,5 @@ u2d         Convert UNIX LF to DOS CRLF
 u2m         Convert UNIX LF to Mac CR
 uc          Convert char STRING to upper case
 ucfirst     Uppercase the first letter of a char STRING
+union       Find the union between two text files
 utc         Convert times to different time zones
