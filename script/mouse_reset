@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# sometimes my mouse freezes/locks.
+sudo modprobe -r usbhid && sudo modprobe -r hid_generic
+sudo modprobe usbhid && modprobe hid_generic
