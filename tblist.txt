@@ -1,59 +1,60 @@
-abc2dec     Convert spreadsheet column to decimal (abc2def --help)
-atime       Get the last access time for a file
-avg         Calculate the average for a set of numbers
-chmog       chmod, chgrp, chown all at once
-cipher      Encrypt / decrypt data
-connect     Connect to hosts via SSH
-cp1252      Generate Windows CP1252 character set
-commify     Commify a string of decimal numbers
-count       MD5 hash and count unique lines
-ctime       Get the inode change time for a file
-dedupe      Dedupe a file by line
-dupes       Show the dupes in a file
-def         Get the definition of a word from dict.org
-devid       Run file test operators to determine a FILE type
-d2m         Convert DOS CRLF to Mac CR
-d2u         Convert DOS CRLF to UNIX LF
-endian      Determine system endian
-enum        Enumerate lines of a file
-epoch       Seconds since 1970-01-01 00:00:00 in the local time zone
-epoch2iso   Convert the local epoch to ISO UTC +0
-extract     Extract an archive
-findmod     Find a Perl module
-ftime       Get the access, inode change, and modify times for a fle
-get_pw      Password prompting
-icmp4       ICMP v4 type and code lookup
-inc         Show Perl @INC
-inpath      Determine if a file is in the $PATH
-intersect   Find the intersection between two text files
-ipsort      Sort a list of IPv4 addresses
-jd          Julian date
-json2perl   Convert JSON to a Perl structure
-jy          Move files to $HOME/.junkyard
-lc          Convert char STRING string to lower case
-level       Show the current shell depth
-luhn        Validate a credit card number
-lpm         Find every Perl module on the system
-m2d         Convert Mac CR to DOS CRLF
-m2u         Convert Mac CR to UNIX LF
-md5line     Calculate MD5 hashes for words and phrases
-mtime       Get the last modification time for a file
-now         Display current time in UTC +0 and the local time zone
-rhash       Recursively hash a directory structure
-sdev        Calculate the standard deviation of a set of numbers
-scrid       Show STY if screen is running
-sf          Swap two files
-shebang     Add the shebang you forgot to put in a script
-status      Pull up basic stats
-stub        Make a quick short Perl script or module stub
-tartar      Copy one directory tree to another location
-tb          View Toolbox tool list
-tcpflag     Decode TCP flags from hex
-timez       Show time across various locations of the globe
-tnl         Get a TOR node list
-u2d         Convert UNIX LF to DOS CRLF
-u2m         Convert UNIX LF to Mac CR
-uc          Convert char STRING to upper case
-ucfirst     Uppercase the first letter of a char STRING
-union       Find the union between two text files
-utc         Convert times to different time zones
+abc2dec       Convert spreadsheet column to decimal (abc2def --help)
+atime         Get the last access time for a file
+avg           Calculate the average for a set of numbers
+chmog         chmod, chgrp, chown all at once
+cipher        Encrypt / decrypt data
+connect       Connect to hosts via SSH
+cp1252        Generate Windows CP1252 character set
+commify       Commify a string of decimal numbers
+count         MD5 hash and count unique lines
+ctime         Get the inode change time for a file
+dedupe        Dedupe a file by line
+dupes         Show the dupes in a file
+def           Get the definition of a word from dict.org
+devid         Run file test operators to determine a FILE type
+d2m           Convert DOS CRLF to Mac CR
+d2u           Convert DOS CRLF to UNIX LF
+endian        Determine system endian
+enum          Enumerate lines of a file
+epoch         Seconds since 1970-01-01 00:00:00 in the local time zone
+epoch2iso     Convert the local epoch to ISO UTC +0
+extract       Extract an archive
+findmod       Find a Perl module
+ftime         Get the access, inode change, and modify times for a fle
+get_pw        Password prompting
+icmp4         ICMP v4 type and code lookup
+inc           Show Perl @INC
+inpath        Determine if a file is in the $PATH
+intersect     Find the intersection between two text files
+ipsort        Sort a list of IPv4 addresses
+jd            Julian date
+json2perl     Convert JSON to a Perl structure
+jy            Move files to $HOME/.junkyard
+lc            Convert char STRING string to lower case
+level         Show the current shell depth
+luhn          Validate a credit card number
+lpm           Find every Perl module on the system
+m2d           Convert Mac CR to DOS CRLF
+m2u           Convert Mac CR to UNIX LF
+md5line       Calculate MD5 hashes for words and phrases
+mouse_reset   Reset mouse in X session
+mtime         Get the last modification time for a file
+now           Display current time in UTC +0 and the local time zone
+rhash         Recursively hash a directory structure
+sdev          Calculate the standard deviation of a set of numbers
+scrid         Show STY if screen is running
+sf            Swap two files
+shebang       Add the shebang you forgot to put in a script
+status        Pull up basic stats
+stub          Make a quick short Perl script or module stub
+tartar        Copy one directory tree to another location
+tb            View Toolbox tool list
+tcpflag       Decode TCP flags from hex
+timez         Show time across various locations of the globe
+tnl           Get a TOR node list
+u2d           Convert UNIX LF to DOS CRLF
+u2m           Convert UNIX LF to Mac CR
+uc            Convert char STRING to upper case
+ucfirst       Uppercase the first letter of a char STRING
+union         Find the union between two text files
+utc           Convert times to different time zones
